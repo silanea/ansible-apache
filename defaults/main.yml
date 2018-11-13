@@ -1,0 +1,13 @@
+---
+vhost:
+  - ip: ['*']
+  - port: 443
+  - documentroot: /var/www/html
+  - ssl: provision
+webserver:
+  - config:
+    - traceenable: Off
+    - servertokens: Prod
+    - serversignature: Off
+    - fileetag: None
+    - xframeoptions: "sameorigin"

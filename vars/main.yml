@@ -1,0 +1,20 @@
+---
+role_webserver:
+  - config:
+    - owner: root
+    - mode: 0640
+    - path: /etc/httpd/
+    - directories:
+      - conf.available
+      - conf.enabled
+      - vhosts.available
+      - vhosts.enabled
+    - base:
+      - templates:
+        - src: httpd
+          dest: conf/httpd.conf
+        - src: ssl
+          dest: conf.available/00-ssl.conf
+  - rungroup: apache
+  - runuser: apache
+      

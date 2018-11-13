@@ -1,0 +1,10 @@
+---
+webserver.config.custom:
+  - name: freeipa
+    state: enabled
+    content: "
+WSGISocketPrefix /run/httpd/wsgi
+WSGIDaemonProcess ipa processes=4 threads=1 maximum-requests=500  user=ipaapi group=ipaapi display-name=%{GROUP} socket-timeout=2147483647 lang=C.UTF-8 locale=C.UTF-8
+WSGIImportScript /usr/share/ipa/wsgi.py process-group=ipa application-group=ipa
+WSGIScriptAlias /ipa /usr/share/ipa/wsgi.py
+WSGIScriptReloading Off"

@@ -1,0 +1,83 @@
+{{ ansible_managed | comment }}
+
+# Any changes to this file will be overwritten. If you need to change values
+# in here, then do so in Ansible through group or host variables.
+# If you absolutely need to configure something manually, create a custom
+# configuration file in $config_root/conf.available/ and symlink it
+# from $config_root/conf.enabled/, it will then be automatically included.
+
+{% if webserver.config.serverroot is defined %}
+ServerRoot "{{ webserver.config.serverroot }}"
+{% endif %}
+
+{% if webserver.config.listen is defined %}
+        {% for loop in webserver.config.listen %}
+Listen {{ loop }}
+        {% endfor %}
+{% endif %}
+
+Include conf.modules.d/*.conf
+
+User {{ webserver.config.runuser }}
+Group {{ webserver.config.rungroup }}
+
+ServerAdmin {{ webserver.config.mail }}
+
+<Directory />
+    AllowOverride none
+    Require all denied
+</Directory>
+
+DocumentRoot "{{ webserver.config.documentroot }}"
+
+<Directory "{{ webserver.content.basepath }}">
+    AllowOverride None
+    # Allow open access:
+    Require all granted
+</Directory>
+
+<Directory "{{ webserver.config.documentroot }}">
+	Options Indexes FollowSymLinks
+	AllowOverride None
+	Require all granted
+</Directory>
+
+<IfModule dir_module>
+    DirectoryIndex {% for loop in webserver.config.index %}{{ loop }} {% endfor %}
+</IfModule>
+
+ErrorLog {{ webserver.config.errorlog }}
+LogLevel {{ webserver.config.loglevel }}
+<IfModule log_config_module>
+{% for loop in webserver.config.logformats %}
+	LogFormat {{ loop }}
+{% endfor %}
+	CustomLog {{ webserver.config.customlog }}
+</IfModule>
+
+{# TODO mod_alias (ScriptAlias /cgi-bin/ "/var/www/cgi-bin/") #}
+
+AddDefaultCharset {{ webserver.config.defaultcharset }}
+
+EnableMMAP {{ webserver.config.mmap }}
+EnableSendfile {{ webserver.config.sendfile }}
+TraceEnable {{ webserver.config.traceenable }}
+ServerTokens {{ webserver.config.servertokens }}
+ServerSignature {{ webserver.config.serversignature }}
+FileETag {{ webserver.config.fileetag }}
+
+Protocols h2 http/1.1
+H2EarlyHints on
+
+<IfModule mod_headers.c>
+	Header set X-Frame-Options: {{ webserver.config.xframeoptions }}
+	Header unset Server
+	Header unset X-Powered-By
+	Header edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+	Header set X-XSS-Protection "1; mode=block"
+	Header edit Set-Cookie (?i)^(.*)(;\s*secure)??((\s*;)?(.*)) "$1; Secure$3$4"
+</IfModule>
+
+IncludeOptional conf.enabled/*.conf
+
+IncludeOptional vhosts.enabled/*.conf

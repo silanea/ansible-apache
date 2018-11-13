@@ -1,0 +1,24 @@
+---
+- name: httpd | Configuration - Folder structure
+  file:
+    path: {{ webserver.config.path }}/{{item}}
+    state: directory
+    group: {{ webserver.rungroup }}
+    owner: {{ webserver.config.owner }}
+    mode: {{ webserver.config.mode }}
+  loop: "{{ webserver.config.directories|flatten(levels=1) }}"
+
+- name: httpd | Configuration - Symlink active configuration
+  file:
+    path: {{ webserver.config.path }}/conf.d
+    src: {{ webserver.config.path }}/conf.d.enabled
+    state: link
+
+- name: httpd | Configuration - copy base configuration
+  template:
+    src: {{ item.src }}
+    dest: {{ item.dest }}
+    owner: {{ webserver.config.owner }}
+    group: {{ webserver.rungroup }}
+    mode: {{ webserver.config.mode }}
+  loop: "{{ webserver.config.base.templates|flatten(levels=1) }}"

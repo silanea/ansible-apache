@@ -1,0 +1,11 @@
+{{ ansible_managed | comment }}
+
+# Any changes to this file will be overwritten. If you need to change values
+# in here, then do so in Ansible through group or host variables.
+# If you absolutely need to configure something manually, create a custom
+# configuration file in $config_root/conf.available/ and symlink it
+# from $config_root/conf.enabled/, it will then be automatically included.
+
+{% for loop in webserver.config.custom %}
+{{ loop }}
+{% endfor %}

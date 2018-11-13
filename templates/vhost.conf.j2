@@ -1,0 +1,129 @@
+<VirtualHost {{ vhost.ip }}:{{ vhost.port }}>
+        ServerName {{ vhost.fqdn }}
+{% if vhost.aliases is defined %}
+	{% for loop in vhost.aliases %}
+	ServerAlias {{ loop }}
+	{% endfor %}
+{% endif %}
+
+{% if vhost.documentroot is defined %}
+        DocumentRoot    "{{ vhost.documentroot }}"
+{% else %}
+	DocumentRoot	"{{ role_webserver.defaults.documentroot }}"
+{% endif %}
+
+	#===========================================================#
+	# == Log options                                          ==#
+        ErrorLog logs/{{ vhost.identifier }}_error_log
+        TransferLog logs/{{ vhost.identifier }}_access_log
+        LogLevel warn
+{% if vhost.ssl is not false %}
+	CustomLog logs/{{ vhost.identifier }}_request_log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+{% else %}
+	CustomLog logs/{{ vhost.identifier }}_request_log "%t %h \"%r\" %b"
+{% endif %}	
+
+{% if vhost.ssl is not false %}
+	#===========================================================#
+	# == SSL options                                          ==#
+	
+	SSLEngine on
+{% endif %}
+
+{% if vhost.ssl is letsencrypt %}
+	SSLCertificateFile /etc/letsencrypt/live/{{ vhost.fqdn }}/cert.pem
+	SSLCertificateKeyFile /etc/letsencrypt/live/{{ vhost.fqdn }}/privkey.pem
+	SSLCertificateChainFile /etc/letsencrypt/live/{{ vhost.fqdn }}/chain.pem
+{% elseif vhost.ssl is provision %}
+        # Provisioning certificate
+	SSLCertificateFile      /etc/pki/tls/certs/localhost.crt
+	SSLCertificateKeyFile       /etc/pki/tls/private/localhost.key
+{% elseif vhost.ssl is custom %}
+	{% if vhost.ssl-certificate is defined %}
+	SSLCertificateFile {{ vhost.ssl-certificatefile }}
+	{% endif %}
+	{% if vhost.ssl-key is defined %}
+	SSLCertificateKey {{ vhost.ssl-key }}
+	{% endif %}
+	{% if vhost.ssl-chain is defined %}
+	SSLCertificateChainFile {{ vhost.ssl-chain }}
+	{% endif %}
+{% endif %}
+
+{% if vhost.directories is defined %}
+	#===========================================================#
+	# == Directories                                          ==#
+
+	{% for loop in vhost.directories %}
+        <Directory {{ loop.path }}>
+                {% if loop.options is defined %}
+		Options {{ loop.options }}
+		{% endif %}
+		{% if loop.allowoverride is defined %}
+                AllowOverride {{ loop.allowoverride }}
+		{% endif %}
+        </Directory>
+	{% endfor %}
+{% endif %}
+
+{# TODO Define Location options #}
+{% if vhost.locations defined %}
+	#===========================================================#
+	# == Locations                                            ==#
+
+	{% for loop in vhost.locations %}
+        <Location {{ loop.url }}>
+                {% if loop.options is defined %}
+		Options {{ loop.options }}
+		{% endif %}
+		{% if loop.allowoverride is defined %}
+                AllowOverride {{ loop.allowoverride }}
+		{% endif %}
+        </Location>
+	{% endfor %}
+{% endif %}
+
+{# TODO Define LocationMatch options #}
+{% if vhost.locationmatches defined %}
+	#===========================================================#
+	# == Location Matches                                     ==#
+
+	{% for loop in vhost.locationmatches %}
+        <LocationMatch {{ loop.url }}>
+                {% if loop.options is defined %}
+		Options {{ loop.options }}
+		{% endif %}
+		{% if loop.allowoverride is defined %}
+                AllowOverride {{ loop.allowoverride }}
+		{% endif %}
+        </LocationMatch>
+	{% endfor %}
+{% endif %}
+
+{% if vhost.aliases is defined %}
+	#===========================================================#
+	# == Aliases                                              ==#
+
+	{% for loop in vhost.aliases %}
+        Alias {{ loop.source }} {{ loop.destination }}
+	{% endfor %}
+{% endif %}
+
+{% if vhost.proxies is defined %}
+	#===========================================================#
+	# == Proxies                                              ==#
+
+	{% if vhost.proxies.passes is defined
+		{% for loop in vhost.proxies.passes %}
+	ProxyPass {{ loop.source }} {{ loop.destination }}
+		{% endfor %}
+	{% endif %}
+	{% if vhost.proxies.reversepasses is defined
+		{% for loop in vhost.proxies.reversepasses %}
+	ProxyPass {{ loop.source }} {{ loop.destination }}
+		{% endfor %}
+	{% endif %}
+	{# TODO Define forward proxies #}
+{% endif %}
+
+</VirtualHost>
