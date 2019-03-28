@@ -31,22 +31,22 @@
 {% endif %}
 
 {% if vhost.ssl is letsencrypt %}
-	SSLCertificateFile /etc/letsencrypt/live/{{ vhost.fqdn }}/cert.pem
-	SSLCertificateKeyFile /etc/letsencrypt/live/{{ vhost.fqdn }}/privkey.pem
-	SSLCertificateChainFile /etc/letsencrypt/live/{{ vhost.fqdn }}/chain.pem
+	SSLCertificateFile			/etc/letsencrypt/live/{{ vhost.fqdn }}/cert.pem
+	SSLCertificateKeyFile		/etc/letsencrypt/live/{{ vhost.fqdn }}/privkey.pem
+	SSLCertificateChainFile	/etc/letsencrypt/live/{{ vhost.fqdn }}/chain.pem
 {% elseif vhost.ssl is provision %}
-        # Provisioning certificate
-	SSLCertificateFile      /etc/pki/tls/certs/localhost.crt
-	SSLCertificateKeyFile       /etc/pki/tls/private/localhost.key
+  # Provisioning certificate
+	SSLCertificateFile			/etc/pki/tls/certs/localhost.crt
+	SSLCertificateKeyFile   /etc/pki/tls/private/localhost.key
 {% elseif vhost.ssl is custom %}
 	{% if vhost.ssl-certificate is defined %}
-	SSLCertificateFile {{ vhost.ssl-certificatefile }}
+	SSLCertificateFile			{{ vhost.ssl-certificatefile }}
 	{% endif %}
 	{% if vhost.ssl-key is defined %}
-	SSLCertificateKey {{ vhost.ssl-key }}
+	SSLCertificateKey				{{ vhost.ssl-key }}
 	{% endif %}
 	{% if vhost.ssl-chain is defined %}
-	SSLCertificateChainFile {{ vhost.ssl-chain }}
+	SSLCertificateChainFile	{{ vhost.ssl-chain }}
 	{% endif %}
 {% endif %}
 

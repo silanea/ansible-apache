@@ -22,3 +22,12 @@
     group: {{ webserver.rungroup }}
     mode: {{ webserver.config.mode }}
   loop: "{{ webserver.config.base.templates|flatten(levels=1) }}"
+
+- name: httpd | Configuration - create vhost files
+  template:
+    src: templates/vhost.conf.j2
+    dest: {{ webserver.config.path }}/vhosts.available/{{ item.fqnd }}.conf
+    owner: {{ webserver.config.owner }}
+    group: {{ webserver.rungroup }}
+    mode: {{ webserver.config.mode }}
+  loop: "{{ webserver.config.vhosts|flatten(levels=1) }}"    
