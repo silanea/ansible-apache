@@ -3,9 +3,9 @@
   file:
     path: "{{ webserver.config.path }}/{{item}}"
     state: directory
-    group: {{ webserver.rungroup }}
-    owner: {{ webserver.config.owner }}
-    mode: {{ webserver.config.mode }}
+    group: "{{ webserver.rungroup }}"
+    owner: "{{ webserver.config.owner }}"
+    mode: "{{ webserver.config.mode }}"
   loop: "{{ webserver.config.directories|flatten(levels=1) }}"
 
 - name: httpd | Configuration - Symlink active configuration
@@ -16,18 +16,18 @@
 
 - name: httpd | Configuration - copy base configuration
   template:
-    src: {{ item.src }}
-    dest: {{ item.dest }}
-    owner: {{ webserver.config.owner }}
-    group: {{ webserver.rungroup }}
-    mode: {{ webserver.config.mode }}
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ webserver.config.owner }}"
+    group: "{{ webserver.rungroup }}"
+    mode: "{{ webserver.config.mode }}"
   loop: "{{ webserver.config.base.templates|flatten(levels=1) }}"
 
 - name: httpd | Configuration - create vhost files
   template:
     src: "templates/vhost.conf.j2"
     dest: "{{ webserver.config.path }}/vhosts.available/{{ item.fqnd }}.conf"
-    owner: {{ webserver.config.owner }}
-    group: {{ webserver.rungroup }}
-    mode: {{ webserver.config.mode }}
+    owner: "{{ webserver.config.owner }}"
+    group: "{{ webserver.rungroup }}"
+    mode: "{{ webserver.config.mode }}"
   loop: "{{ webserver.config.vhosts|flatten(levels=1) }}"    
