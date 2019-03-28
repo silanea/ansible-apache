@@ -1,7 +1,7 @@
 ---
 - name: httpd | Configuration - Folder structure
   file:
-    path: {{ webserver.config.path }}/{{item}}
+    path: "{{ webserver.config.path }}/{{item}}"
     state: directory
     group: {{ webserver.rungroup }}
     owner: {{ webserver.config.owner }}
@@ -10,8 +10,8 @@
 
 - name: httpd | Configuration - Symlink active configuration
   file:
-    path: {{ webserver.config.path }}/conf.d
-    src: {{ webserver.config.path }}/conf.d.enabled
+    path: "{{ webserver.config.path }}/conf.d"
+    src: "{{ webserver.config.path }}/conf.d.enabled"
     state: link
 
 - name: httpd | Configuration - copy base configuration
@@ -25,8 +25,8 @@
 
 - name: httpd | Configuration - create vhost files
   template:
-    src: templates/vhost.conf.j2
-    dest: {{ webserver.config.path }}/vhosts.available/{{ item.fqnd }}.conf
+    src: "templates/vhost.conf.j2"
+    dest: "{{ webserver.config.path }}/vhosts.available/{{ item.fqnd }}.conf"
     owner: {{ webserver.config.owner }}
     group: {{ webserver.rungroup }}
     mode: {{ webserver.config.mode }}
