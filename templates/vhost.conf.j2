@@ -1,5 +1,5 @@
 <VirtualHost {{ vhost.ip }}:{{ vhost.port }}>
-        ServerName {{ vhost.fqdn }}
+	ServerName {{ vhost.fqdn }}
 {% if vhost.aliases is defined %}
 	{% for loop in vhost.aliases %}
 	ServerAlias {{ loop }}
@@ -7,16 +7,16 @@
 {% endif %}
 
 {% if vhost.documentroot is defined %}
-        DocumentRoot    "{{ vhost.documentroot }}"
+	DocumentRoot    "{{ vhost.documentroot }}"
 {% else %}
 	DocumentRoot	"{{ role_webserver.defaults.documentroot }}"
 {% endif %}
 
 	#===========================================================#
 	# == Log options                                          ==#
-        ErrorLog logs/{{ vhost.identifier }}_error_log
-        TransferLog logs/{{ vhost.identifier }}_access_log
-        LogLevel warn
+	ErrorLog logs/{{ vhost.identifier }}_error_log
+	TransferLog logs/{{ vhost.identifier }}_access_log
+	LogLevel warn
 {% if vhost.ssl is not false %}
 	CustomLog logs/{{ vhost.identifier }}_request_log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
 {% else %}
@@ -55,14 +55,15 @@
 	# == Directories                                          ==#
 
 	{% for loop in vhost.directories %}
-        <Directory {{ loop.path }}>
-                {% if loop.options is defined %}
+	<Directory {{ loop.path }}>
+		{% if loop.options is defined %}
 		Options {{ loop.options }}
 		{% endif %}
 		{% if loop.allowoverride is defined %}
-                AllowOverride {{ loop.allowoverride }}
+		AllowOverride {{ loop.allowoverride }}
 		{% endif %}
-        </Directory>
+		{# TODO allow additional options #}
+	</Directory>
 	{% endfor %}
 {% endif %}
 
@@ -72,14 +73,16 @@
 	# == Locations                                            ==#
 
 	{% for loop in vhost.locations %}
-        <Location {{ loop.url }}>
-                {% if loop.options is defined %}
+	<Location {{ loop.url }}>
+		{% if loop.options is defined %}
 		Options {{ loop.options }}
 		{% endif %}
 		{% if loop.allowoverride is defined %}
-                AllowOverride {{ loop.allowoverride }}
+		AllowOverride {{ loop.allowoverride }}
 		{% endif %}
-        </Location>
+		{# TODO proxies #}
+		{# TODO allow additional options #}
+	</Location>
 	{% endfor %}
 {% endif %}
 
@@ -89,14 +92,14 @@
 	# == Location Matches                                     ==#
 
 	{% for loop in vhost.locationmatches %}
-        <LocationMatch {{ loop.url }}>
-                {% if loop.options is defined %}
+	<LocationMatch {{ loop.url }}>
+		{% if loop.options is defined %}
 		Options {{ loop.options }}
 		{% endif %}
 		{% if loop.allowoverride is defined %}
-                AllowOverride {{ loop.allowoverride }}
+		AllowOverride {{ loop.allowoverride }}
 		{% endif %}
-        </LocationMatch>
+	</LocationMatch>
 	{% endfor %}
 {% endif %}
 
@@ -105,7 +108,7 @@
 	# == Aliases                                              ==#
 
 	{% for loop in vhost.aliases %}
-        Alias {{ loop.source }} {{ loop.destination }}
+	Alias {{ loop.source }} {{ loop.destination }}
 	{% endfor %}
 {% endif %}
 
